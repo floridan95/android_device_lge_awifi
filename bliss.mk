@@ -22,11 +22,11 @@ $(call inherit-product, device/lge/awifi/device.mk)
 $(call inherit-product-if-exists, vendor/lge/awifi/awifi-vendor.mk)
 
 # Inherit some common CM stuff
-$(call inherit-product, vendor/cm/config/common_full_tablet_wifionly.mk)
+$(call inherit-product, vendor/bliss/config/common_full_tablet_wifionly.mk)
 
 # Device identifier. This must come after all inclusions.
 PRODUCT_DEVICE := awifi
-PRODUCT_NAME := cm_awifi
+PRODUCT_NAME := bliss_awifi
 PRODUCT_BRAND := lge
 PRODUCT_MODEL := LG-V500
 PRODUCT_MANUFACTURER := LGE
