@@ -30,6 +30,18 @@ BOARD_USES_ALSA_AUDIO:= true
 # Bionic
 MALLOC_IMPL := dlmalloc
 
+#BlissPop Config Flags
+TARGET_TC_ROM := 5.1-linaro
+TARGET_TC_KERNEL := 4.8-linaro
+BLISSIFY := true
+BLISS_O3 := true
+BLISS_STRICT := true
+BLISS_GRAPHITE := true
+BLISS_KRAIT := true
+BLISS_PIPE := true
+TARGET_GCC_VERSION_EXP := $(TARGET_TC_ROM)
+TARGET_KERNEL_CUSTOM_TOOLCHAIN := $(TARGET_TC_KERNEL)
+
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := AWIFI
 TARGET_BOOTLOADER_NAME := awifi
@@ -128,3 +140,163 @@ WIFI_DRIVER_FW_PATH_AP  := "ap"
 
 # inherit from the proprietary version
 -include vendor/lge/awifi/BoardConfigVendor.mk
+
+
+ifeq ($(strip $(BLISS_GRAPHITE)),true)
+OPT1 := (graphite)
+GRAPHITE_FLAGS := \
+  -fgraphite \
+  -fgraphite-identity \
+  -floop-flatten \
+  -floop-parallelize-all \
+  -ftree-loop-linear \
+  -floop-interchange \
+  -floop-strip-mine \
+  -floop-block
+ifeq ($(strip $(BLISSIFY)),true)
+  GRAPHITE_FLAGS += \
+    -Wno-error=maybe-uninitialized
+endif
+endif
+
+# Force disable some modules that are not compatible with graphite flags.
+# Add more modules if needed for devices in BoardConfig.mk
+# LOCAL_DISABLE_GRAPHITE +=
+# Force disable some modules that are not compatible with graphite flags.
+# Add more modules if needed for devices in BoardConfig.mk
+# LOCAL_DISABLE_GRAPHITE +=
+LOCAL_DISABLE_GRAPHITE := \
+  libmincrypt \
+  mkbootimg \
+  mkbootfs \
+  libhost \
+  ibext2_profile \
+  make_ext4fs \
+  hprof-conv \
+  acp \
+  libsqlite \
+  libsqlite_jni \
+  simg2img_host \
+  e2fsck \
+  append2simg \
+  build_verity_tree \
+  sqlite3 \
+  e2fsck_host \
+  libext2_profile_host \
+  libext2_quota_host \
+  libext2fs_host\
+  libbz\
+  make_f2fs\
+  imgdiff\
+  bsdiff \
+  libedify \
+  fs_config \
+  unpackbootimg \
+  mkyaffs2image \
+  libext2_com_err_host \
+  libext2_blkid_host \
+  libext2_e2p_host\
+  libcrypto-host \
+  libexpat-host \
+  libicuuc-host \
+  libicui18n-host \
+  dmtracedump \
+  libsparse_host \
+  libz-host \
+  libfdlibm \
+  libsqlite3_android \
+  libssl-host \
+  libf2fs_dlutils_host \
+  libf2fs_utils_host \
+  libf2fs_ioutils_host \
+  libf2fs_fmt_host_dyn \
+  libext2_uuid_host \
+  minigzip \
+  libdex \
+  dexdump \
+  dexlist \
+  libext4_utils_host \
+  third_party_protobuf_protoc_arm_host_gyp \
+  libaapt \
+  aapt \
+  fastboot  \
+  libpng \
+  aprotoc \
+  fio \
+  fsck.f2fs \
+  libandroidfw \
+  libbacktrace_test \
+  liblog \
+  libgtest_host \
+  libbacktrace_libc++ \
+  v8_tools_gyp_v8_nosnapshot_arm_host_gyp \
+  third_party_icu_icui18n_arm_host_gyp \
+  third_party_icu_icuuc_arm_host_gyp \
+  tird_party_protobuf_protobuf_full_do_not_use_arm_host_gyp \
+  third_party_protobuf_protobuf_full_do_not_use_arm_host_gyp \
+  v8_tools_gyp_mksnapshot_arm_host_gyp \
+  third_party_libvpx_libvpx_obj_int_extract_arm_host_gyp \
+  libutils \
+  libcutils \
+  libexpat \
+  v8_tools_gyp_v8_base_arm_host_gyp \
+  v8_tools_gyp_v8_libbase_arm_host_gyp \
+  v8_tools_gyp_v8_libbase_arm_host_gyp_32 \
+  aidl \
+  libziparchive-host \
+  libcrypto_static \
+  libunwind-ptrace \
+  libgtest_main_host \
+  libbacktrace \
+  backtrace_test \
+  libzopfli \
+  zipalign \
+  rsg-generator \
+  unrar \
+  libunz \
+  adb \
+  libzipfile \
+  rsg-generator_support \
+  libunwindbacktrace \
+  libc_common \
+  libz \
+  libselinux \
+  checkfc \
+  checkseapp \
+  checkpolicy \
+  libsepol \
+  libpcre \
+  libunwind \
+  libFFTEm \
+  libicui18n \
+  libskia \
+  libvpx \
+  libmedia_jni \
+  libstagefright_mp3dec \
+  libart \
+  mdnsd \
+  libwebrtc_spl \
+  third_party_WebKit_Source_core_webcore_svg_gyp \
+  libjni_filtershow_filters \
+  libavformat \
+  libavcodec \
+  skia_skia_library_gyp
+
+ifeq (1,$(words $(filter 4.9 4.9-sm,$(TARGET_TC_ROM))))
+  LOCAL_DISABLE_GRAPHITE += \
+    libFraunhoferAAC
+endif
+
+ifeq (true,$(BLISS_O3))
+OPT3 := (O3)
+endif
+
+ifeq (true,$(BLISS_STRICT))
+OPT2 := (strict)
+endif
+
+ifeq (true,$(BLISS_KRAIT))
+OPT4 := (krait)
+endif
+
+GCC_OPTIMIZATION_LEVELS := $(OPT1)$(OPT2)$(OPT3)$(OPT4)
